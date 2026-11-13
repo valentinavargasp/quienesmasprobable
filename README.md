@@ -19,7 +19,7 @@ Juego rompehielos multijugador para la weekly del equipo remoto. Una compu entra
    - Se ve quién ya votó, pero nunca a quién votó cada uno.
    - La moderación toca **Revelar**: todas las pantallas muestran las barras, el ganador (o los empatados) y la consigna.
 5. **Premios de la Weekly:** MVP, podio, Ninja del Perfil Bajo y un título honorífico por ronda.
-6. **Certificados:** cada ganador de cada ronda recibe un certificado de Slash Studio con su título (si hay empate, uno para cada persona, marcado como “Título compartido”). En la pantalla final, cada título tiene un botón **🎓 Certificado**, y cada jugador ve arriba la sección **Tus certificados**. Desde el certificado se puede **Descargar PNG** o **Imprimir / Guardar PDF**.
+6. **Certificados:** cada ganador de cada ronda recibe un certificado de Slash Studio con su título (si hay empate, uno para cada persona, marcado como “Título compartido”). En la pantalla final, cada título tiene un botón **🎓 Certificado**, y cada jugador ve arriba la sección **Tus certificados**. Desde el certificado se puede **Descargar PNG**.
 
 La pantalla de moderación tiene una barra de control abajo con **Reiniciar partida**, disponible en cualquier momento (pide confirmación). Reiniciar borra los votos y vuelve a la sala de espera; los jugadores siguen conectados.
 
@@ -92,7 +92,7 @@ src/
     ├── Results.jsx          # Barras, ganador y consigna
     ├── FinalScreen.jsx      # Premios de la Weekly + certificados
     ├── Certificate.jsx      # Certificado 1200×850 para exportar
-    ├── CertificateModal.jsx # Ver, descargar PNG o imprimir
+    ├── CertificateModal.jsx # Ver y descargar en PNG
     ├── CertificateDemo.jsx  # Demo solo en desarrollo (?demo=certificado)
     ├── CountdownOverlay.jsx
     ├── TopBar.jsx
