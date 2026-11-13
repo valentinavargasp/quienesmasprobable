@@ -7,7 +7,7 @@ import { Avatar, Card, Confetti, plural } from './ui';
 const PODIUM_HEIGHT = ['h-40 md:h-48', 'h-28 md:h-36', 'h-20 md:h-28'];
 const MEDAL = ['bg-yellow-300 text-yellow-900', 'bg-slate-200 text-slate-700', 'bg-orange-200 text-orange-800'];
 
-export default function FinalScreen({ active, history, isHost, hostName, onRestart }) {
+export default function FinalScreen({ active, history, isHost, onRestart }) {
   const { totals, wins } = useMemo(() => {
     const t = Object.fromEntries(active.map((p) => [p.name, 0]));
     const w = Object.fromEntries(active.map((p) => [p.name, 0]));
@@ -167,7 +167,7 @@ export default function FinalScreen({ active, history, isHost, hostName, onResta
           </button>
         ) : (
           <div className="flex items-center gap-3 bg-white/15 border border-white/25 text-white rounded-full px-6 py-3 font-bold">
-            <Hourglass className="w-5 h-5 animate-pulse" /> {hostName || 'La moderación'} puede reiniciar la partida
+            <Hourglass className="w-5 h-5 animate-pulse" /> La moderación puede reiniciar la partida
           </div>
         )}
       </div>

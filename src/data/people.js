@@ -7,6 +7,4 @@ export const PEOPLE = [
   { name: 'Sebastián', solid: 'bg-orange-500', soft: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-300', bar: 'from-orange-500 to-red-400' },
 ];
 
-export const DEFAULT_HOST = 'Valentina';
-
 export const personOf = (name) => PEOPLE.find((p) => p.name === name);

@@ -10,6 +10,7 @@ import IdentifyScreen from './components/IdentifyScreen';
 import LobbyScreen from './components/LobbyScreen';
 import RoundScreen from './components/RoundScreen';
 import FinalScreen from './components/FinalScreen';
+import ModeratorScreen from './components/ModeratorScreen';
 import TopBar from './components/TopBar';
 import HostMissing from './components/HostMissing';
 
@@ -48,29 +49,35 @@ function Game() {
   }
   if (!g.ready) return <CenterCard icon={Loader2} spin title="Conectando con la sala…" />;
 
-  if (!g.myName) {
+  if (!g.myKey) {
+    if (g.restoring) return <CenterCard icon={Loader2} spin title="Recuperando tu lugar en la sala…" />;
     return <IdentifyScreen presence={g.presence} gameStatus={g.game?.status} onClaim={g.claim} />;
+  }
+
+  const topBar = <TopBar myName={g.myName} isHost={g.isHost} connected={g.connected} room={ROOM} onLeave={g.release} />;
+
+  if (g.isHost) {
+    return (
+      <>
+        {topBar}
+        <ModeratorScreen g={g} history={history} />
+      </>
+    );
   }
 
   const status = g.game?.status || 'lobby';
 
   return (
     <>
-      <TopBar myName={g.myName} isHost={g.isHost} connected={g.connected} room={ROOM} onLeave={g.release} />
+      {topBar}
       {status === 'playing' && <RoundScreen g={g} />}
       {status === 'final' && !g.hostOnline && (
         <div className="max-w-6xl mx-auto px-4 pt-4">
-          <HostMissing hostName={g.game?.host} onTakeOver={g.becomeHost} />
+          <HostMissing />
         </div>
       )}
       {status === 'final' && (
-        <FinalScreen
-          active={PEOPLE.filter((p) => g.candidates.includes(p.name))}
-          history={history}
-          isHost={g.isHost}
-          hostName={g.game?.host}
-          onRestart={g.resetGame}
-        />
+        <FinalScreen active={PEOPLE.filter((p) => g.candidates.includes(p.name))} history={history} isHost={false} />
       )}
       {status === 'lobby' && <LobbyScreen g={g} />}
     </>

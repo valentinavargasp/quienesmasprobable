@@ -11,29 +11,31 @@ import {
   update,
 } from 'firebase/database';
 import { auth, db } from '../lib/firebase';
-import { DEFAULT_HOST, PEOPLE } from '../data/people';
+import { PEOPLE } from '../data/people';
 import { TOTAL_ROUNDS } from '../data/questions';
 
-const NAME_KEY = 'qemp:name';
+export const HOST_KEY = 'moderacion';
 
 const sanitizeRoom = (s) => (s || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40);
 export const ROOM = sanitizeRoom(new URLSearchParams(window.location.search).get('sala')) || 'weekly';
 const BASE = `rooms/${ROOM}`;
-
-const storage = {
-  get: () => {
-    try { return localStorage.getItem(NAME_KEY); } catch { return null; }
-  },
-  set: (v) => {
-    try { localStorage.setItem(NAME_KEY, v); } catch {}
-  },
-  clear: () => {
-    try { localStorage.removeItem(NAME_KEY); } catch {}
-  },
-};
+const ROLE_KEY = `qemp:role:${ROOM}`;
 
 const ORDER = PEOPLE.map((p) => p.name);
 const inOrder = (names) => ORDER.filter((n) => names.includes(n));
+const validRole = (k) => (k === HOST_KEY || ORDER.includes(k) ? k : null);
+
+const storage = {
+  get: () => {
+    try { return validRole(localStorage.getItem(ROLE_KEY)); } catch { return null; }
+  },
+  set: (v) => {
+    try { localStorage.setItem(ROLE_KEY, v); } catch {}
+  },
+  clear: () => {
+    try { localStorage.removeItem(ROLE_KEY); } catch {}
+  },
+};
 
 export function useGame() {
   const [uid, setUid] = useState(null);
@@ -44,15 +46,33 @@ export function useGame() {
   const [game, setGame] = useState(null);
   const [votes, setVotes] = useState({});
   const [loaded, setLoaded] = useState({ presence: false, game: false });
+  const [storedRole, setStoredRole] = useState(storage.get);
 
   const presenceRef = useRef(presence);
   const gameRef = useRef(game);
   const offsetRef = useRef(offset);
   const claimingRef = useRef(false);
-  const autoHostRef = useRef(false);
   presenceRef.current = presence;
   gameRef.current = game;
   offsetRef.current = offset;
+
+  const saveRole = useCallback((k) => {
+    storage.set(k);
+    setStoredRole(k);
+  }, []);
+  const clearRole = useCallback(() => {
+    storage.clear();
+    setStoredRole(null);
+  }, []);
+
+  // Las demás pestañas del navegador se enteran cuando se elige o se libera un rol.
+  useEffect(() => {
+    const onStorage = (e) => {
+      if (e.key === ROLE_KEY || e.key === null) setStoredRole(storage.get());
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
   useEffect(
     () =>
@@ -81,101 +101,92 @@ export function useGame() {
     return () => unsubs.forEach((u) => u());
   }, [uid]);
 
-  const myName = useMemo(
-    () => Object.keys(presence).find((n) => presence[n]?.uid === uid) || null,
+  const myKey = useMemo(
+    () => Object.keys(presence).find((k) => validRole(k) && presence[k]?.uid === uid) || null,
     [presence, uid]
   );
+  const isHost = myKey === HOST_KEY;
+  const myName = myKey && !isHost ? myKey : null;
+  const hostOnline = Boolean(presence[HOST_KEY]);
   const onlineNames = useMemo(() => inOrder(Object.keys(presence)), [presence]);
   const candidates = useMemo(() => inOrder(Object.keys(game?.players || {})), [game]);
-  const isHost = Boolean(myName && game?.host === myName);
-  const hostOnline = Boolean(game?.host && presence[game.host]);
 
   const serverNow = useCallback(() => Date.now() + offsetRef.current, []);
 
   const claim = useCallback(
-    async (name) => {
-      if (!uid || claimingRef.current) return false;
+    async (key) => {
+      if (!uid || !validRole(key) || claimingRef.current) return false;
+      const current = Object.keys(presenceRef.current).find((k) => validRole(k) && presenceRef.current[k]?.uid === uid);
+      const stored = storage.get();
+      if ((current && current !== key) || (stored && stored !== key)) return false;
+
       claimingRef.current = true;
       try {
-        const r = ref(db, `${BASE}/presence/${name}`);
+        const r = ref(db, `${BASE}/presence/${key}`);
         const res = await runTransaction(r, (cur) => {
           if (cur && cur.uid !== uid) return undefined;
           return { uid, at: Date.now() };
         });
-        if (!res.committed) return false;
+        if (!res.committed) {
+          if (stored === key) clearRole();
+          return false;
+        }
 
         await onDisconnect(r).remove();
-        storage.set(name);
+        saveRole(key);
 
-        await Promise.all(
-          Object.keys(presenceRef.current)
-            .filter((n) => n !== name && presenceRef.current[n]?.uid === uid)
-            .map((n) => remove(ref(db, `${BASE}/presence/${n}`)))
-        );
-
-        const st = gameRef.current?.status;
-        if (st === 'playing' || st === 'final') {
-          await set(ref(db, `${BASE}/game/players/${name}`), true);
+        if (key === HOST_KEY) {
+          await runTransaction(ref(db, `${BASE}/game`), (cur) => {
+            if (!cur) return { status: 'lobby', host: HOST_KEY };
+            if (cur.host === HOST_KEY) return undefined;
+            return { ...cur, host: HOST_KEY };
+          });
+        } else {
+          const st = gameRef.current?.status;
+          if (st === 'playing' || st === 'final') {
+            await set(ref(db, `${BASE}/game/players/${key}`), true);
+          }
         }
         return true;
       } catch (e) {
-        console.error('No se pudo tomar el nombre', e);
+        console.error('No se pudo tomar el rol', e);
+        if (stored === key) clearRole();
         return false;
       } finally {
         claimingRef.current = false;
       }
     },
-    [uid]
+    [uid, saveRole, clearRole]
   );
 
+  // Si otra pestaña de este navegador se cerró y su onDisconnect borró la presencia,
+  // esta pestaña vuelve a reclamar el rol guardado.
+  const takenElsewhere = Boolean(storedRole && presence[storedRole] && presence[storedRole].uid !== uid);
   useEffect(() => {
-    if (!uid || !connected || !loaded.presence || myName) return;
-    const stored = storage.get();
-    if (!stored || !ORDER.includes(stored)) return;
-    if (presence[stored] && presence[stored].uid !== uid) {
-      storage.clear();
+    if (!uid || !connected || !loaded.presence || !loaded.game || myKey || !storedRole) return;
+    if (takenElsewhere) {
+      clearRole();
       return;
     }
-    claim(stored);
-  }, [uid, connected, loaded.presence, myName, presence, claim]);
+    claim(storedRole);
+  }, [uid, connected, loaded.presence, loaded.game, myKey, storedRole, takenElsewhere, claim, clearRole]);
 
   const release = useCallback(async () => {
-    if (!myName) return;
-    storage.clear();
-    const r = ref(db, `${BASE}/presence/${myName}`);
+    if (!myKey) return;
+    clearRole();
+    const r = ref(db, `${BASE}/presence/${myKey}`);
     await onDisconnect(r).cancel();
-    if (gameRef.current?.host === myName) await set(ref(db, `${BASE}/game/host`), null);
     await remove(r);
-  }, [myName]);
-
-  const becomeHost = useCallback(async () => {
-    if (!myName) return;
-    if (!gameRef.current) await set(ref(db, `${BASE}/game`), { status: 'lobby', host: myName });
-    else await set(ref(db, `${BASE}/game/host`), myName);
-  }, [myName]);
-
-  useEffect(() => {
-    if (myName !== DEFAULT_HOST || !connected || !loaded.game || hostOnline || autoHostRef.current) return;
-    autoHostRef.current = true;
-    runTransaction(ref(db, `${BASE}/game`), (cur) => {
-      if (!cur) return { status: 'lobby', host: DEFAULT_HOST };
-      if (cur.host && cur.host !== DEFAULT_HOST && presenceRef.current[cur.host]) return undefined;
-      return { ...cur, host: DEFAULT_HOST };
-    })
-      .catch((e) => console.error('No se pudo asignar la moderación', e))
-      .finally(() => {
-        autoHostRef.current = false;
-      });
-  }, [myName, connected, loaded.game, hostOnline]);
+  }, [myKey, clearRole]);
 
   const startGame = useCallback(async () => {
     if (!isHost) return;
-    const players = Object.fromEntries(Object.keys(presenceRef.current).map((n) => [n, true]));
+    const players = Object.fromEntries(inOrder(Object.keys(presenceRef.current)).map((n) => [n, true]));
     await update(ref(db, BASE), {
       votes: null,
-      game: { status: 'playing', host: myName, round: 0, phase: 'waiting', countdownAt: null, players },
+      game: { status: 'playing', host: HOST_KEY, round: 0, phase: 'waiting', countdownAt: null, players },
     });
-  }, [isHost, myName]);
+  }, [isHost]);
 
   const startCountdown = useCallback(async () => {
     if (!isHost) return;
@@ -214,16 +225,18 @@ export function useGame() {
 
   const resetGame = useCallback(async () => {
     if (!isHost) return;
-    await update(ref(db, BASE), { votes: null, game: { status: 'lobby', host: myName } });
-  }, [isHost, myName]);
+    await update(ref(db, BASE), { votes: null, game: { status: 'lobby', host: HOST_KEY } });
+  }, [isHost]);
 
   return {
     ready: Boolean(uid && loaded.presence && loaded.game),
+    restoring: Boolean(!myKey && storedRole && !takenElsewhere),
     authError,
     connected,
     presence,
     game,
     votes,
+    myKey,
     myName,
     isHost,
     hostOnline,
@@ -232,7 +245,6 @@ export function useGame() {
     serverNow,
     claim,
     release,
-    becomeHost,
     startGame,
     startCountdown,
     vote,

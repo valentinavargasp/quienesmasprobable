@@ -10,6 +10,8 @@ const config = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
+export const MODERATOR_PIN = (import.meta.env.VITE_MODERATOR_PIN || '').trim();
+
 export const isConfigured = Boolean(config.apiKey && config.databaseURL && config.projectId);
 
 const app = isConfigured ? initializeApp(config) : null;

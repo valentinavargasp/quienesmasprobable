@@ -3,23 +3,25 @@
     "rooms": {
       "$room": {
         ".read": "auth != null",
-
         "presence": {
           "$name": {
             ".write": "auth != null && (!data.exists() || data.child('uid').val() === auth.uid)",
             ".validate": "!newData.exists() || newData.child('uid').val() === auth.uid"
           }
         },
-
         "game": {
-          ".write": "auth != null"
+          ".write": "auth != null && root.child('rooms/' + $room + '/presence/moderacion/uid').val() === auth.uid",
+          "players": {
+            "$name": {
+              ".write": "auth != null && $name !== 'moderacion' && newData.val() === true && root.child('rooms/' + $room + '/presence/' + $name + '/uid').val() === auth.uid"
+            }
+          }
         },
-
         "votes": {
-          ".write": "auth != null && !newData.exists() && root.child('rooms/' + $room + '/presence/' + root.child('rooms/' + $room + '/game/host').val() + '/uid').val() === auth.uid",
+          ".write": "auth != null && !newData.exists() && root.child('rooms/' + $room + '/presence/moderacion/uid').val() === auth.uid",
           "$round": {
             "$voter": {
-              ".write": "auth != null && !data.exists() && root.child('rooms/' + $room + '/presence/' + $voter + '/uid').val() === auth.uid",
+              ".write": "auth != null && !data.exists() && $voter !== 'moderacion' && root.child('rooms/' + $room + '/presence/' + $voter + '/uid').val() === auth.uid && root.child('rooms/' + $room + '/game/players/' + $voter).exists()",
               ".validate": "newData.isString() && root.child('rooms/' + $room + '/game/players/' + newData.val()).exists()"
             }
           }

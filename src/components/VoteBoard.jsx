@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Check, CheckCircle2, Hourglass, Loader2, Lock, Send, Vote } from 'lucide-react';
+import { Check, Hourglass, Loader2, Lock, Send, Vote } from 'lucide-react';
 import { personOf } from '../data/people';
 import { Avatar, Card } from './ui';
+import { VoteProgress } from './RoundParts';
 
 export default function VoteBoard({ candidates, voters, roundVotes, myName, votingOpen, countdownStarted, round, onVote }) {
   const [selected, setSelected] = useState(null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(null);
   const myVote = roundVotes[myName];
-  const votedNames = Object.keys(roundVotes);
   const amCandidate = candidates.includes(myName);
 
   useEffect(() => {
@@ -27,35 +27,7 @@ export default function VoteBoard({ candidates, voters, roundVotes, myName, voti
 
   const progress = (
     <div className="mt-6 pt-5 border-t border-slate-100">
-      <div className="flex items-center justify-between mb-3">
-        <span className="font-extrabold text-slate-700 flex items-center gap-2">
-          <Vote className="w-5 h-5 text-indigo-500" /> Votaron {votedNames.length} de {voters.length}
-        </span>
-        {votedNames.length >= voters.length && voters.length > 0 && (
-          <span className="text-emerald-600 font-extrabold text-sm flex items-center gap-1">
-            <CheckCircle2 className="w-4 h-4" /> ¡Están todos!
-          </span>
-        )}
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {voters.map((n) => {
-          const done = votedNames.includes(n);
-          const p = personOf(n);
-          return (
-            <span
-              key={n}
-              className={`inline-flex items-center gap-1.5 rounded-full pl-1 pr-3 py-1 font-bold text-sm transition-all ${
-                done ? `${p.soft} ${p.text}` : 'bg-slate-100 text-slate-400'
-              }`}
-            >
-              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${done ? p.solid : 'bg-slate-300'}`}>
-                {done ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : n[0]}
-              </span>
-              {n}
-            </span>
-          );
-        })}
-      </div>
+      <VoteProgress voters={voters} roundVotes={roundVotes} />
     </div>
   );
 
