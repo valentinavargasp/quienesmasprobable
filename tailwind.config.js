@@ -31,6 +31,18 @@ export default {
           '0%': { transform: 'scale(.6)', opacity: '.8' },
           '100%': { transform: 'scale(1.8)', opacity: '0' },
         },
+        wave: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-14px)' },
+        },
+        glow: {
+          '0%, 100%': { color: '#fff' },
+          '50%': { color: '#fde047' },
+        },
+        dots: {
+          '0%, 100%': { opacity: '.2' },
+          '50%': { opacity: '1' },
+        },
       },
       animation: {
         pop: 'pop .55s cubic-bezier(.2,1.4,.4,1) both',
@@ -39,6 +51,9 @@ export default {
         wiggle: 'wiggle 1.2s ease-in-out infinite',
         bump: 'bump .3s ease-out',
         ring: 'ring .9s ease-out infinite',
+        wave: 'wave 1.6s ease-in-out infinite',
+        'wave-glow': 'wave 1.6s ease-in-out infinite, glow 3s ease-in-out infinite',
+        dots: 'dots 1.2s ease-in-out infinite',
       },
     },
   },

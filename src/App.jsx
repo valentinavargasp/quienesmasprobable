@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 import { isConfigured } from './lib/firebase';
 import { tally } from './lib/tally';
@@ -15,6 +15,7 @@ import TopBar from './components/TopBar';
 import HostMissing from './components/HostMissing';
 import CertificateDemo from './components/CertificateDemo';
 import RevealDemo from './components/RevealDemo';
+import LoadingScreen from './components/LoadingScreen';
 
 const DEMO = import.meta.env.DEV && new URLSearchParams(window.location.search).get('demo');
 
@@ -44,6 +45,22 @@ function Game() {
     [g.votes, g.candidates]
   );
 
+  // La pantalla de carga se muestra al menos 2,2 s y sale con un fade de 400 ms.
+  const [minElapsed, setMinElapsed] = useState(false);
+  const [loaderDone, setLoaderDone] = useState(false);
+  const loaded = g.ready && minElapsed;
+
+  useEffect(() => {
+    const t = setTimeout(() => setMinElapsed(true), 2200);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    const t = setTimeout(() => setLoaderDone(true), 400);
+    return () => clearTimeout(t);
+  }, [loaded]);
+
   if (g.authError) {
     return (
       <CenterCard icon={AlertTriangle} title="No se pudo conectar">
@@ -51,7 +68,7 @@ function Game() {
       </CenterCard>
     );
   }
-  if (!g.ready) return <CenterCard icon={Loader2} spin title="Conectando con la sala…" />;
+  if (!g.ready || !loaderDone) return <LoadingScreen room={ROOM} leaving={loaded} />;
 
   if (!g.myKey) {
     if (g.restoring) return <CenterCard icon={Loader2} spin title="Recuperando tu lugar en la sala…" />;
