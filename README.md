@@ -13,12 +13,13 @@ Juego rompehielos multijugador para la weekly del equipo remoto. Una compu entra
    - **Modo moderación:** se elige en la compu que se va a compartir en la llamada. Si está configurado `VITE_MODERATOR_PIN`, pide el PIN. Solo puede haber una moderación conectada.
 2. **La moderación no juega:** no vota y no aparece en la votación ni en los resultados. Si quien modera también quiere jugar, entra con su nombre desde **otro dispositivo**, por ejemplo el celular.
 3. **Sala de espera:** la pantalla de moderación muestra el link para entrar, quién está conectado y las reglas. La moderación toca **Comenzar Juego** (hacen falta al menos 2 jugadores). Si alguien entra tarde, se suma solo.
-4. **Cada ronda (10 en total):**
+4. **Cada ronda (una por pregunta de `src/data/questions.js`, hoy 15):**
    - La moderación lanza **3, 2, 1, ¡YA!**, y la cuenta aparece sincronizada en todas las pantallas.
    - Al “¡YA!” se abre la votación. Cada jugador/a elige a alguien y confirma. El voto no se puede cambiar.
    - Se ve quién ya votó, pero nunca a quién votó cada uno.
    - La moderación toca **Revelar**: todas las pantallas muestran las barras, el ganador (o los empatados) y la consigna.
 5. **Premios de la Weekly:** MVP, podio, Ninja del Perfil Bajo y un título honorífico por ronda.
+6. **Certificados:** cada ganador de cada ronda recibe un certificado de Slash Studio con su título (si hay empate, uno para cada persona, marcado como “Título compartido”). En la pantalla final, cada título tiene un botón **🎓 Certificado**, y cada jugador ve arriba la sección **Tus certificados**. Desde el certificado se puede **Descargar PNG** o **Imprimir / Guardar PDF**.
 
 La pantalla de moderación tiene una barra de control abajo con **Reiniciar partida**, disponible en cualquier momento (pide confirmación). Reiniciar borra los votos y vuelve a la sala de espera; los jugadores siguen conectados.
 
@@ -49,12 +50,18 @@ Por defecto todos juegan en la sala `weekly`. Para tener otra partida en paralel
 
 Copiá `.env.example` a `.env.local` y completá los datos de Firebase. `VITE_MODERATOR_PIN` es opcional: si está vacío no se pide PIN. El PIN es una barrera liviana para que nadie entre como moderación por error; viaja en el bundle del frontend, así que no es un secreto.
 
+## Certificados y marca
+
+- La marca se configura en `src/data/brand.js` (`name` y `logo`). Para usar el logo real, copialo a `public/brand/slash-logo.png`. Si el archivo no existe o no carga, el certificado muestra el nombre como texto.
+- Para ver un certificado sin jugar todas las rondas, con `npm run dev` abrí `http://localhost:5173/?demo=certificado`. Muestra una partida inventada y abre un certificado de ejemplo. Solo funciona en desarrollo: no queda en el build de producción.
+
 ## Personalizar
 
 | Qué | Dónde |
 | --- | --- |
 | Participantes y colores | `src/data/people.js` |
 | Preguntas, consignas, categorías y títulos | `src/data/questions.js` |
+| Nombre y logo del certificado | `src/data/brand.js` |
 | Lógica en tiempo real (roles, presencia, votos, rondas) | `src/hooks/useGame.js` |
 | Reglas de seguridad | `database.rules.json` |
 
@@ -65,14 +72,16 @@ src/
 ├── App.jsx                  # Ruteo según rol: elegir rol → moderación o jugador (sala → ronda → final)
 ├── lib/
 │   ├── firebase.js          # Inicialización con variables de entorno + PIN de moderación
-│   └── tally.js             # Conteo de votos y ganadores
+│   ├── tally.js             # Conteo de votos y ganadores
+│   └── certificates.js      # Lista de certificados a partir del historial
 ├── hooks/
 │   ├── useGame.js           # Roles, estado compartido en Firebase y acciones
 │   ├── useCountdown.js      # Cuenta regresiva sincronizada 3, 2, 1, ¡YA! + beep
 │   └── useBeep.js           # Sonido de la cuenta regresiva
 ├── data/
 │   ├── people.js
-│   └── questions.js
+│   ├── questions.js
+│   └── brand.js
 └── components/
     ├── IdentifyScreen.jsx   # "¿Quién sos?" + "Modo moderación"
     ├── ModeratorScreen.jsx  # Pantalla para compartir + barra de control
@@ -81,7 +90,10 @@ src/
     ├── RoundParts.jsx       # RoundHeader, QuestionCard, VoteProgress
     ├── VoteBoard.jsx        # Voto único con confirmación + progreso
     ├── Results.jsx          # Barras, ganador y consigna
-    ├── FinalScreen.jsx      # Premios de la Weekly
+    ├── FinalScreen.jsx      # Premios de la Weekly + certificados
+    ├── Certificate.jsx      # Certificado 1200×850 para exportar
+    ├── CertificateModal.jsx # Ver, descargar PNG o imprimir
+    ├── CertificateDemo.jsx  # Demo solo en desarrollo (?demo=certificado)
     ├── CountdownOverlay.jsx
     ├── TopBar.jsx
     ├── HostMissing.jsx

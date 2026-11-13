@@ -1,5 +1,6 @@
 import { BookOpen, Check, Hourglass, MousePointerClick, Timer, Users, Zap } from 'lucide-react';
 import { PEOPLE } from '../data/people';
+import { TOTAL_ROUNDS } from '../data/questions';
 import { Card } from './ui';
 import HostMissing from './HostMissing';
 
@@ -105,7 +106,7 @@ export default function LobbyScreen({ g }) {
     <div className="max-w-5xl mx-auto px-4 py-8 md:py-10">
       <header className="text-center text-white animate-fadeUp">
         <h1 className="font-display font-bold text-4xl md:text-6xl leading-[1.05]">¿Quién es más probable que…?</h1>
-        <p className="mt-3 text-lg md:text-xl text-white/85 font-semibold">Sala de espera · 10 rondas</p>
+        <p className="mt-3 text-lg md:text-xl text-white/85 font-semibold">Sala de espera · {TOTAL_ROUNDS} rondas</p>
       </header>
 
       <div className="grid md:grid-cols-5 gap-6 mt-8">

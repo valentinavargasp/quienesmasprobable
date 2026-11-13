@@ -18,7 +18,7 @@ export function RoundHeader({ round }) {
           <CatIcon className="w-4 h-4" /> {question.cat}
         </span>
       </div>
-      <div className="flex gap-1.5 mb-6">
+      <div className="flex gap-1 md:gap-1.5 mb-6">
         {QUESTIONS.map((q, i) => (
           <div
             key={q.award}

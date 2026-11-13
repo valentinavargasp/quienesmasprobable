@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Crown, Mic, Trophy } from 'lucide-react';
 import { Avatar, Card, plural } from './ui';
 
@@ -7,9 +8,16 @@ export default function Results({ active, votes, winners, question }) {
   const tie = winners.length > 1;
   const winnerVotes = votes[winners[0]] || 0;
   const QuestionIcon = question.icon;
+  const rootRef = useRef(null);
+
+  // Al revelar, llevar la vista hasta los resultados.
+  useEffect(() => {
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    rootRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }, []);
 
   return (
-    <div className="grid lg:grid-cols-5 gap-6">
+    <div ref={rootRef} className="grid lg:grid-cols-5 gap-6 scroll-mt-4">
       <Card className="lg:col-span-3 p-5 md:p-7 animate-fadeUp">
         <h3 className="font-display font-bold text-xl md:text-2xl text-slate-900 flex items-center gap-2 mb-5">
           <Trophy className="w-6 h-6 text-indigo-500" /> Resultados de la ronda

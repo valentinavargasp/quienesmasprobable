@@ -13,6 +13,9 @@ import FinalScreen from './components/FinalScreen';
 import ModeratorScreen from './components/ModeratorScreen';
 import TopBar from './components/TopBar';
 import HostMissing from './components/HostMissing';
+import CertificateDemo from './components/CertificateDemo';
+
+const DEMO_CERTIFICATE = import.meta.env.DEV && new URLSearchParams(window.location.search).get('demo') === 'certificado';
 
 function CenterCard({ icon: Icon, title, children, spin }) {
   return (
@@ -77,7 +80,12 @@ function Game() {
         </div>
       )}
       {status === 'final' && (
-        <FinalScreen active={PEOPLE.filter((p) => g.candidates.includes(p.name))} history={history} isHost={false} />
+        <FinalScreen
+          active={PEOPLE.filter((p) => g.candidates.includes(p.name))}
+          history={history}
+          isHost={false}
+          myName={g.myName}
+        />
       )}
       {status === 'lobby' && <LobbyScreen g={g} />}
     </>
@@ -85,6 +93,7 @@ function Game() {
 }
 
 export default function App() {
+  if (DEMO_CERTIFICATE) return <CertificateDemo />;
   if (!isConfigured) {
     return (
       <CenterCard icon={AlertTriangle} title="Servicio no disponible">

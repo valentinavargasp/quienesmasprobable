@@ -30,7 +30,7 @@ function JoinLink() {
 
   return (
     <Card className="p-5 md:p-7 animate-fadeUp">
-      <div className="text-sm font-extrabold uppercase tracking-widest text-indigo-500">Entren desde el celular</div>
+      <div className="text-sm font-extrabold uppercase tracking-widest text-indigo-500">Link para ingresar</div>
       <div className="mt-3 flex flex-col md:flex-row md:items-center gap-3">
         <div className="flex-1 flex items-center gap-3 bg-indigo-50 rounded-2xl px-4 py-3 min-w-0">
           <Link2 className="w-7 h-7 text-indigo-500 shrink-0" />
@@ -152,7 +152,7 @@ export default function ModeratorScreen({ g, history }) {
         <div className="max-w-5xl mx-auto px-4 py-8 md:py-10">
           <header className="text-center text-white animate-fadeUp">
             <h1 className="font-display font-bold text-4xl md:text-6xl leading-[1.05]">¿Quién es más probable que…?</h1>
-            <p className="mt-3 text-lg md:text-xl text-white/85 font-semibold">Sala de espera · 10 rondas</p>
+            <p className="mt-3 text-lg md:text-xl text-white/85 font-semibold">Sala de espera · {TOTAL_ROUNDS} rondas</p>
           </header>
           <div className="mt-8">
             <JoinLink />

@@ -49,3 +49,44 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Imprimir / Guardar PDF desde el modal de certificado: solo el certificado, apaisado y sin márgenes. */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+  body:has(.cert-modal) {
+    background: #fff !important;
+  }
+  body:has(.cert-modal) > #root,
+  .cert-modal .no-print,
+  .confetti {
+    display: none !important;
+  }
+  .cert-modal,
+  .cert-modal-inner,
+  .cert-panel {
+    position: static !important;
+    display: block !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+    background: none !important;
+    backdrop-filter: none !important;
+    overflow: visible !important;
+  }
+  .cert-box {
+    height: auto !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  .cert-scaler {
+    transform: none !important;
+  }
+  .certificate {
+    zoom: 0.88; /* 1200x850 entra en A4 y Carta apaisados */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

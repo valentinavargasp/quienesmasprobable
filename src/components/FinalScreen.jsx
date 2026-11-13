@@ -1,13 +1,57 @@
-import { useMemo } from 'react';
-import { Award, Crown, EyeOff, Hourglass, Medal, RotateCcw, Trophy } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
+import { Award, Crown, EyeOff, GraduationCap, Hourglass, Medal, RotateCcw, Trophy } from 'lucide-react';
 import { personOf } from '../data/people';
 import { CATEGORIES, QUESTIONS } from '../data/questions';
+import { buildCertificates } from '../lib/certificates';
 import { Avatar, Card, Confetti, plural } from './ui';
+import CertificateModal from './CertificateModal';
 
 const PODIUM_HEIGHT = ['h-40 md:h-48', 'h-28 md:h-36', 'h-20 md:h-28'];
 const MEDAL = ['bg-yellow-300 text-yellow-900', 'bg-slate-200 text-slate-700', 'bg-orange-200 text-orange-800'];
 
-export default function FinalScreen({ active, history, isHost, onRestart }) {
+function MyCertificates({ certs, onOpen }) {
+  return (
+    <Card className="p-6 md:p-7 mt-10 animate-fadeUp">
+      <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900 flex items-center gap-2">
+        <GraduationCap className="w-7 h-7 text-indigo-500" /> Tus certificados
+      </h2>
+      {certs.length === 0 ? (
+        <p className="text-slate-500 font-bold mt-3">Esta vez no te llevaste título… ¡la próxima weekly es tuya!</p>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-5">
+          {certs.map((c) => (
+            <div key={c.round} className="flex items-center gap-3 rounded-2xl bg-amber-50 border-2 border-amber-200 p-3">
+              <div className="w-11 h-11 rounded-xl bg-yellow-300 text-indigo-950 flex items-center justify-center shrink-0">
+                <Award className="w-6 h-6" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-display font-bold text-lg text-slate-900 leading-tight">{c.award}</div>
+                <div className="text-xs text-slate-500 font-bold">
+                  Ronda {c.round} · {plural(c.votes, 'voto')}
+                  {c.shared && ' · compartido'}
+                </div>
+              </div>
+              <button
+                onClick={() => onOpen(c)}
+                className="btn-press shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-full px-3 py-2"
+              >
+                Ver y descargar
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+export default function FinalScreen({ active, history, isHost, onRestart, myName }) {
+  const [openCert, setOpenCert] = useState(null);
+  const certificates = useMemo(() => buildCertificates(history), [history]);
+  const myCertificates = useMemo(() => certificates.filter((c) => c.name === myName), [certificates, myName]);
+  const certFor = (round, name) => certificates.find((c) => c.round === round && c.name === name);
+  const closeCert = useCallback(() => setOpenCert(null), []);
+
   const { totals, wins } = useMemo(() => {
     const t = Object.fromEntries(active.map((p) => [p.name, 0]));
     const w = Object.fromEntries(active.map((p) => [p.name, 0]));
@@ -45,6 +89,8 @@ export default function FinalScreen({ active, history, isHost, onRestart }) {
           Los resultados que nadie pidió, pero todos merecen
         </p>
       </header>
+
+      {myName && <MyCertificates certs={myCertificates} onOpen={setOpenCert} />}
 
       <div className="grid lg:grid-cols-5 gap-6 mt-10">
         <Card className="lg:col-span-2 p-7 text-center flex flex-col justify-center animate-pop">
@@ -141,10 +187,21 @@ export default function FinalScreen({ active, history, isHost, onRestart }) {
               <div className="flex items-center gap-2 mt-3 flex-wrap">
                 {h.winners.map((w) => {
                   const p = personOf(w);
+                  const cert = certFor(i + 1, w);
                   return (
-                    <span key={w} className={`inline-flex items-center gap-1.5 ${p.soft} ${p.text} font-extrabold rounded-full pl-1 pr-3 py-1`}>
-                      <span className={`w-6 h-6 rounded-full ${p.solid} text-white text-xs flex items-center justify-center`}>{w[0]}</span>
-                      {w}
+                    <span key={w} className="inline-flex items-center gap-1.5">
+                      <span className={`inline-flex items-center gap-1.5 ${p.soft} ${p.text} font-extrabold rounded-full pl-1 pr-3 py-1`}>
+                        <span className={`w-6 h-6 rounded-full ${p.solid} text-white text-xs flex items-center justify-center`}>{w[0]}</span>
+                        {w}
+                      </span>
+                      {cert && (
+                        <button
+                          onClick={() => setOpenCert(cert)}
+                          className="btn-press text-xs font-extrabold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-full px-2.5 py-1"
+                        >
+                          🎓 Certificado
+                        </button>
+                      )}
                     </span>
                   );
                 })}
@@ -171,6 +228,8 @@ export default function FinalScreen({ active, history, isHost, onRestart }) {
           </div>
         )}
       </div>
+
+      {openCert && <CertificateModal cert={openCert} onClose={closeCert} />}
     </div>
   );
 }
