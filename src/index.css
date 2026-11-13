@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    @apply font-body text-slate-800;
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.18) 0, transparent 35%),
+      radial-gradient(circle at 90% 20%, rgba(255, 214, 102, 0.25) 0, transparent 30%),
+      radial-gradient(circle at 80% 90%, rgba(56, 189, 248, 0.25) 0, transparent 35%),
+      linear-gradient(135deg, #4f46e5 0%, #7c3aed 45%, #db2777 100%);
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  .btn-press {
+    transition: transform 0.12s ease, box-shadow 0.2s ease, background-color 0.2s ease, opacity 0.2s;
+  }
+  .btn-press:active {
+    transform: translateY(2px) scale(0.98);
+  }
+}
+
+@keyframes fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(105vh) rotate(720deg); opacity: 0.9; }
+}
+.confetti {
+  position: fixed;
+  top: 0;
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  animation: fall linear forwards;
+  pointer-events: none;
+  z-index: 60;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "rules": {
+    "rooms": {
+      "$room": {
+        ".read": "auth != null",
+
+        "presence": {
+          "$name": {
+            ".write": "auth != null && (!data.exists() || data.child('uid').val() === auth.uid)",
+            ".validate": "!newData.exists() || newData.child('uid').val() === auth.uid"
+          }
+        },
+
+        "game": {
+          ".write": "auth != null"
+        },
+
+        "votes": {
+          ".write": "auth != null && !newData.exists() && root.child('rooms/' + $room + '/presence/' + root.child('rooms/' + $room + '/game/host').val() + '/uid').val() === auth.uid",
+          "$round": {
+            "$voter": {
+              ".write": "auth != null && !data.exists() && root.child('rooms/' + $room + '/presence/' + $voter + '/uid').val() === auth.uid",
+              ".validate": "newData.isString() && root.child('rooms/' + $room + '/game/players/' + newData.val()).exists()"
+            }
+          }
+        }
+      }
+    }
+  }
+}

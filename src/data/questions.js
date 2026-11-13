@@ -1,0 +1,106 @@
+import {
+  Clock,
+  Coffee,
+  Flame,
+  Globe,
+  Laptop,
+  Laugh,
+  MicOff,
+  Shield,
+  Shirt,
+  ShoppingCart,
+  Skull,
+  WifiOff,
+} from 'lucide-react';
+
+export const CATEGORIES = {
+  'Modo Remoto': { icon: Laptop, chip: 'bg-sky-100 text-sky-800' },
+  'Vida Cotidiana': { icon: Coffee, chip: 'bg-amber-100 text-amber-800' },
+  'Caos Controlado': { icon: Flame, chip: 'bg-rose-100 text-rose-800' },
+  Supervivencia: { icon: Skull, chip: 'bg-emerald-100 text-emerald-800' },
+};
+
+export const QUESTIONS = [
+  {
+    cat: 'Modo Remoto',
+    q: 'hable un minuto entero con el micrófono muteado antes de darse cuenta',
+    tipo: 'Imitación',
+    icon: MicOff,
+    award: 'Premio Mute Eterno',
+    consigna: 'Tiene 10 segundos para imitar su cara de pánico cuando se da cuenta de que estaba muteado/a.',
+  },
+  {
+    cat: 'Caos Controlado',
+    q: 'tenga más de 40 pestañas abiertas en el navegador en este mismo instante',
+    tipo: '¡Prueba en vivo!',
+    icon: Globe,
+    award: 'Coleccionista de Pestañas',
+    consigna: 'Tiene que decir el número exacto de pestañas abiertas ahora mismo (o compartir pantalla 5 segundos).',
+  },
+  {
+    cat: 'Vida Cotidiana',
+    q: 'haya puesto a calentar agua para el mate o el café y se haya olvidado tres veces seguidas',
+    tipo: 'Derecho a réplica',
+    icon: Coffee,
+    award: 'Medalla al Mate Olvidado',
+    consigna: '¿Culpable o inocente? Contá cuál fue tu récord de veces recalentando la misma agua/café.',
+  },
+  {
+    cat: 'Caos Controlado',
+    q: 'diga "esto es un cambio de 5 minutos" y termine demorando tres días',
+    tipo: 'Confesión rápida',
+    icon: Clock,
+    award: 'Estimador/a Optimista del Año',
+    consigna: '¿Cuál fue la tarea "fácil" que más se te complicó últimamente?',
+  },
+  {
+    cat: 'Modo Remoto',
+    q: 'esté en pijama o pantuflas de la cintura para abajo durante esta reunión',
+    tipo: 'Autoevaluación',
+    icon: Shirt,
+    award: 'Outfit Ejecutivo Mitad y Mitad',
+    consigna: 'Sin mostrar la cámara hacia abajo, describí tu outfit de hoy del 1 al 10 en nivel de comodidad.',
+  },
+  {
+    cat: 'Modo Remoto',
+    q: 'ponga una excusa técnica ("se me cortó internet", "me anda mal el audio") para zafar de una reunión larga',
+    tipo: 'Contraataque',
+    icon: WifiOff,
+    award: 'Maestría en Excusas Técnicas',
+    consigna: 'Si te declarás inocente, elegí a otro de los participantes que creas que sí lo hizo y explicá por qué.',
+  },
+  {
+    cat: 'Supervivencia',
+    q: 'sobreviva más tiempo en un apocalipsis zombie',
+    tipo: 'Estrategia',
+    icon: Shield,
+    award: 'Última Persona en Pie',
+    consigna: 'El equipo confía en vos: tirá tu primer movimiento estratégico si hoy arranca el apocalipsis.',
+  },
+  {
+    cat: 'Vida Cotidiana',
+    q: 'termine comprando algo totalmente innecesario en internet a las 3 de la mañana',
+    tipo: 'Confesión',
+    icon: ShoppingCart,
+    award: 'Carrito de Medianoche',
+    consigna: 'Confesá cuál fue la compra más random o inútil que hiciste por internet.',
+  },
+  {
+    cat: 'Modo Remoto',
+    q: 'se ría solo leyendo un mensaje en medio de una reunión seria y tenga que disimular',
+    tipo: 'Desafío actoral',
+    icon: Laugh,
+    award: 'Óscar a la Risa Contenida',
+    consigna: 'Mostranos tu mejor "cara de reunión seria" mientras te intentás aguantar la risa.',
+  },
+  {
+    cat: 'Caos Controlado',
+    q: 'nos salve las papas esta semana si algo se prende fuego',
+    tipo: 'Discurso',
+    icon: Flame,
+    award: 'Héroe / Heroína de la Semana',
+    consigna: 'Discurso de agradecimiento de 5 segundos aceptando el título de héroe/heroína de la semana.',
+  },
+];
+
+export const TOTAL_ROUNDS = QUESTIONS.length;
