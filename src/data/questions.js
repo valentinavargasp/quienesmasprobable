@@ -1,6 +1,6 @@
 import {
   Camera, Clapperboard, Clock, Coffee, Flame, Globe, Laptop, Laugh, MapPin, MicOff,
-  Music, PawPrint, Shield, Shirt, ShoppingCart, Skull, Smartphone, Star,
+  Music, PawPrint, Shield, Shirt, ShoppingCart, Skull, Smartphone, Snowflake, Star,
 } from 'lucide-react';
 
 export const CATEGORIES = {
@@ -20,6 +20,16 @@ export const QUESTIONS = [
   { cat: 'Caos Controlado', q: 'tenga más de 40 pestañas abiertas en el navegador en este mismo instante',
     tipo: '¡Prueba en vivo!', icon: Globe, award: 'Coleccionista de Pestañas',
     consigna: 'Tiene que decir el número exacto de pestañas abiertas ahora mismo (o compartir pantalla 5 segundos).' },
+  { cat: 'Modo Remoto', q: 'se haya quedado congelado/a en cámara justo con la peor cara posible',
+    tipo: 'Recreación en vivo', icon: Snowflake, award: 'Captura Legendaria',
+    consigna: 'Recreación en vivo: 5 segundos haciendo tu mejor "cara congelada" sin moverte.',
+    easterEgg: {
+      image: '/easter/jefecongelado.png',
+      title: '📸 Evidencia del archivo histórico',
+      caption: 'Mientras tanto, en una weekly no tan lejana…',
+      personCaption: { Esteban: '¡El jefe defiende su título con evidencia propia! 🏆' },
+    },
+  },
   { cat: 'Vida Cotidiana', q: 'le hable a su mascota o a su planta como si fuera compañera de trabajo',
     tipo: 'Presentación', icon: PawPrint, award: 'Mejor Equipo No Humano',
     consigna: 'Presentanos a tu "compañero/a de oficina" (mascota, planta u objeto) en 10 segundos.' },

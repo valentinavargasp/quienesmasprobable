@@ -14,8 +14,9 @@ import ModeratorScreen from './components/ModeratorScreen';
 import TopBar from './components/TopBar';
 import HostMissing from './components/HostMissing';
 import CertificateDemo from './components/CertificateDemo';
+import RevealDemo from './components/RevealDemo';
 
-const DEMO_CERTIFICATE = import.meta.env.DEV && new URLSearchParams(window.location.search).get('demo') === 'certificado';
+const DEMO = import.meta.env.DEV && new URLSearchParams(window.location.search).get('demo');
 
 function CenterCard({ icon: Icon, title, children, spin }) {
   return (
@@ -93,7 +94,8 @@ function Game() {
 }
 
 export default function App() {
-  if (DEMO_CERTIFICATE) return <CertificateDemo />;
+  if (DEMO === 'certificado') return <CertificateDemo />;
+  if (DEMO === 'reveal') return <RevealDemo />;
   if (!isConfigured) {
     return (
       <CenterCard icon={AlertTriangle} title="Servicio no disponible">

@@ -7,6 +7,7 @@ import { useCountdown } from '../hooks/useCountdown';
 import { Confetti } from './ui';
 import VoteBoard from './VoteBoard';
 import Results from './Results';
+import EasterEgg from './EasterEgg';
 import CountdownOverlay from './CountdownOverlay';
 import HostMissing from './HostMissing';
 import { QuestionCard, RoundHeader } from './RoundParts';
@@ -53,6 +54,7 @@ export default function RoundScreen({ g }) {
         ) : (
           <>
             <Results active={active} votes={result.counts} winners={result.winners} question={question} />
+            <EasterEgg key={round} easterEgg={question.easterEgg} winners={result.winners} />
             <div className="flex justify-center mt-7">
               <div className="flex items-center gap-3 bg-white/15 border border-white/25 text-white rounded-full px-6 py-3 font-bold">
                 <Hourglass className="w-5 h-5 animate-pulse" /> Esperando la siguiente ronda…

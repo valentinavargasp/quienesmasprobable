@@ -13,7 +13,7 @@ Juego rompehielos multijugador para la weekly del equipo remoto. Una compu entra
    - **Modo moderación:** se elige en la compu que se va a compartir en la llamada. Si está configurado `VITE_MODERATOR_PIN`, pide el PIN. Solo puede haber una moderación conectada.
 2. **La moderación no juega:** no vota y no aparece en la votación ni en los resultados. Si quien modera también quiere jugar, entra con su nombre desde **otro dispositivo**, por ejemplo el celular.
 3. **Sala de espera:** la pantalla de moderación muestra el link para entrar, quién está conectado y las reglas. La moderación toca **Comenzar Juego** (hacen falta al menos 2 jugadores). Si alguien entra tarde, se suma solo.
-4. **Cada ronda (una por pregunta de `src/data/questions.js`, hoy 15):**
+4. **Cada ronda (una por pregunta de `src/data/questions.js`, hoy 16):**
    - La moderación lanza **3, 2, 1, ¡YA!**, y la cuenta aparece sincronizada en todas las pantallas.
    - Al “¡YA!” se abre la votación. Cada jugador/a elige a alguien y confirma. El voto no se puede cambiar.
    - Se ve quién ya votó, pero nunca a quién votó cada uno.

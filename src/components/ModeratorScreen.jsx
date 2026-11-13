@@ -9,6 +9,7 @@ import { Card, Confetti, ConfirmDialog } from './ui';
 import { PlayersGrid, RulesCard } from './LobbyScreen';
 import { QuestionCard, RoundHeader, VoteProgress } from './RoundParts';
 import Results from './Results';
+import EasterEgg from './EasterEgg';
 import CountdownOverlay from './CountdownOverlay';
 import FinalScreen from './FinalScreen';
 
@@ -61,6 +62,7 @@ function RoundView({ g, countValue, showOverlay, result, voters, roundVotes }) {
         {revealed ? (
           <>
             <Results active={active} votes={result.counts} winners={result.winners} question={QUESTIONS[round]} />
+            <EasterEgg key={round} easterEgg={QUESTIONS[round].easterEgg} winners={result.winners} />
             <Confetti key={`confetti-${round}`} />
           </>
         ) : (
