@@ -23,6 +23,25 @@ function BrandMark() {
   return <img src={BRAND.logo} alt={BRAND.name} onError={() => setFailed(true)} className="h-[56px] w-auto object-contain" />;
 }
 
+function Signature() {
+  const [failed, setFailed] = useState(!BRAND.signature);
+  return (
+    <div className="flex flex-col items-center w-[220px]">
+      {!failed && (
+        <img
+          src={BRAND.signature}
+          alt={`Firma de ${BRAND.signer}`}
+          onError={() => setFailed(true)}
+          className="relative h-[70px] w-auto object-contain -mb-[8px]"
+        />
+      )}
+      <div className="w-full border-b-2 border-white/40 mb-2" />
+      {BRAND.signer && <div className="text-[17px] font-extrabold leading-tight">{BRAND.signer}</div>}
+      <div className="text-[13px] font-bold text-white/60">Moderación de la Weekly</div>
+    </div>
+  );
+}
+
 function Chip({ children, className = 'bg-white/10 text-white/80' }) {
   return <span className={`rounded-full px-4 py-1.5 text-[15px] font-extrabold ${className}`}>{children}</span>;
 }
@@ -91,10 +110,7 @@ const Certificate = forwardRef(function Certificate({ cert, date = new Date() },
             {cert.shared && <Chip className="bg-fuchsia-500/25 text-fuchsia-200">Título compartido</Chip>}
           </div>
 
-          <div className="flex flex-col items-end">
-            <div className="w-[220px] border-b-2 border-white/40 mb-2" />
-            <div className="text-[15px] font-bold text-white/70">Moderación de la Weekly</div>
-          </div>
+          <Signature />
         </div>
       </div>
     </div>
